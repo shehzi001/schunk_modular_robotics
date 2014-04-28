@@ -4,7 +4,7 @@ project (schunk_sdh_control_interface)
 
 find_package(libntcan)
 find_package(libpcan)
-set(sdh_package_path /home/shehzad/rosws/hydro/robocuphome_ws/src/schunk_modular_robotics/schunk_sdh)
+set(sdh_package_path /home/shehzad/ros_ws/hydro/robocuphome_ws/src/schunk_modular_robotics/schunk_sdh)
 
 ###########
 ## Build ##
@@ -36,3 +36,5 @@ add_executable(${PROJECT_NAME} cpp/src/schunk_sdh_control_interface.cpp)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DOSNAME_LINUX -DWITH_ESD_CAN")
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencpp)
 target_link_libraries(${PROJECT_NAME} SDHLibrary ${libntcan_LIBRARIES} ${libpcan_LIBRARIES})
+
+

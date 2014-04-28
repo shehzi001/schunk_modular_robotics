@@ -78,6 +78,14 @@ public:
 
 			operationMode_ = std::string("position");
 
+                        if(sdhdevicetype_.compare("PCAN")==0)
+			{
+			    cout << "Starting initializing PEAKCAN" << endl;
+			    sdh_->OpenCAN_PEAK(baudrate_, timeout_, id_read_, id_write_, sdhdevicestring_.c_str());
+			    cout << "Initialized PEAK CAN for SDH" << endl;
+			    isInitialized_ = true;
+			}
+                        
 			return true;
 		}
 
@@ -92,6 +100,8 @@ int main(int argc, char** argv)
     SchunkSdhControlInterface sdh_interface;
     
     if (!sdh_interface.init()) return 0;
+
+    while(1);
 
     return 0;
 }
