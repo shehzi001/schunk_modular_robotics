@@ -58,10 +58,10 @@ public:
 
 			// setting hardware parameters
 			sdhdevicetype_ = std::string("PCAN");
-			sdhdevicestring_ = std::string("/dev/pcan0");
+			sdhdevicestring_ = std::string("/dev/pcan2");
 			sdhdevicenum_ = 0;
 			baudrate_ = 1000000;
-			timeout_ = (double)0.04;
+			timeout_ = (double)0.5;
 			id_read_ = 43;
 			id_write_ = 42;
 			DOF_ = 7;
