@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(schunk_libm5api)
 
 
-find_package(catkin REQUIRED COMPONENTS libpcan libntcan)
+find_package(catkin REQUIRED COMPONENTS libpcan libntcan roslib)
 
 
 ###################################
@@ -15,8 +15,8 @@ find_package(catkin REQUIRED COMPONENTS libpcan libntcan)
 ## INCLUDE_DIRS: 
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 catkin_package(
-    DEPENDS libpcan libntcan
-    CATKIN_DEPENDS # TODO
+    DEPENDS
+    CATKIN_DEPENDS libpcan libntcan roslib
     INCLUDE_DIRS include
     LIBRARIES m5api
 )
@@ -37,6 +37,30 @@ target_link_libraries(m5api ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############
+## Mark cpp header files for installation
+install(DIRECTORY include/${PROJECT_NAME}/
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+   FILES_MATCHING PATTERN "*.h"
+   PATTERN ".svn" EXCLUDE
+)
+
+install(DIRECTORY src/ComDef/
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/ComDef
+   FILES_MATCHING PATTERN "*.h"
+   PATTERN ".svn" EXCLUDE
+)
+
+install(DIRECTORY src/Device/
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/Device
+   FILES_MATCHING PATTERN "*.h"
+   PATTERN ".svn" EXCLUDE
+)
+
+install(DIRECTORY src/Util/
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/Util
+   FILES_MATCHING PATTERN "*.h"
+   PATTERN ".svn" EXCLUDE
+)
 
 ## Mark executables and/or libraries for installation
 install(TARGETS m5api
@@ -44,3 +68,7 @@ install(TARGETS m5api
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+#install(DIRECTORY include
+#  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
+#)
