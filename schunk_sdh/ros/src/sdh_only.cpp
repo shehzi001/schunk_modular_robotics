@@ -88,6 +88,14 @@
 // external includes
 #include <schunk_sdh/sdh.h>
 
+//serial interface headers
+
+#include <vector>
+#include "schunk_sdh/sdhbase.h"
+#include "schunk_sdh/sdhserial.h"
+#include "schunk_sdh/serialbase.h"
+#include "schunk_sdh/simplevector.h"
+
 /*!
 * \brief Implementation of ROS node for sdh.
 *
@@ -107,6 +115,7 @@ class SdhNode
 		// topic subscribers
 		ros::Subscriber subSetVelocitiesRaw_;
 		ros::Subscriber subSetVelocities_;
+		ros::Subscriber subSetPID_;
 
 		// service servers
 		ros::ServiceServer srvServer_Init_;
@@ -145,6 +154,8 @@ class SdhNode
 		std::vector<double> velocities_; // in rad/s
 		bool hasNewGoal_;
 		std::string operationMode_; 
+
+		SDH::cSDHSerial sdh_serial_interface_;
 		
 	public:
 		/*!
@@ -200,6 +211,7 @@ class SdhNode
 			
 			subSetVelocitiesRaw_ = nh_.subscribe("set_velocities_raw", 1, &SdhNode::topicCallback_setVelocitiesRaw, this);
 			subSetVelocities_ = nh_.subscribe("set_velocities", 1, &SdhNode::topicCallback_setVelocities, this);
+			subSetPID_ = nh_.subscribe("set_pid_", 1, &SdhNode::topicCallback_setPID, this); 
 
 			// getting hardware parameters from parameter server
 			nh_.param("sdhdevicetype", sdhdevicetype_, std::string("PCAN"));
@@ -362,6 +374,59 @@ class SdhNode
 
 			hasNewGoal_ = true;
 		}
+
+		void topicCallback_setPID(const std_msgs::String::ConstPtr& msg)
+		{
+			if (!isInitialized_)
+			{
+				ROS_ERROR("%s: Rejected, sdh not initialized", action_name_.c_str());
+				return;
+			}
+			if(msg->data = "default"){
+				set_default_PID_gains();
+				ROS_INFO("Setting Default PID gains.");
+			} else if(msg->data = "custom"){
+				set_custom_PID_gains();
+				ROS_INFO("Setting Custom PID gains.");
+			}
+		}
+
+		void set_default_PID_gains()
+		{	
+			double p[6] = {20, 50, 20, 50, 20, 50};
+			double i[6] = {4000, 5000, 4000, 5000, 4000, 5000};
+			double d = 0.0;
+
+			for(int axis = 1; axis < 7; axis++) {
+				sdh_serial_interface_.pid(axis, &p[axis-1], &i[axis-1], &d);
+			}
+
+			get_PID_gains();
+		}
+
+
+		void set_custom_PID_gains()
+		{
+			double p[6] = {20, 50, 20, 50, 20, 50};
+			double i = 0.0;
+			double d = 0.0;
+			
+			for(int axis = 1; axis < 7; axis++) {
+				sdh_serial_interface_.pid(axis, &p[axis-1], &i, &d);
+			}
+
+			get_PID_gains();
+		}
+
+		void get_PID_gains()
+		{
+			SDH::cSimpleVector pid;
+			for(int axis = 1; axis < 7; axis++) {
+				pid = sdh_serial_interface_.pid(axis);
+				ROS_INFO_STREAM(axis << ":[" << pid[0] << "," << pid[1] << "," << pid[2]<< "]");
+			}
+		}
+
  		bool parseDegFromJointValue(const brics_actuator::JointValue& val, double &deg_val){
 		    if (val.unit == "rad/s"){
 			deg_val = val.value  * 180.0 / pi_;
@@ -432,6 +497,7 @@ class SdhNode
 					{
 						ROS_INFO("Starting initializing PEAKCAN");
 						sdh_->OpenCAN_PEAK(baudrate_, timeout_, id_read_, id_write_, sdhdevicestring_.c_str());
+						sdh_serial_interface_ =   sdh_-> comm_interface;
 						ROS_INFO("Initialized PEAK CAN for SDH");
 						isInitialized_ = true;
 					}
