@@ -111,6 +111,7 @@ class SdhNode
 		// topic subscribers
 		ros::Subscriber subSetVelocitiesRaw_;
 		ros::Subscriber subSetVelocities_;
+                ros::Subscriber subSetPID_;
 
 		// service servers
 		ros::ServiceServer srvServer_Init_;
@@ -212,7 +213,7 @@ class SdhNode
 			
 			subSetVelocitiesRaw_ = nh_.subscribe("set_velocities_raw", 1, &SdhNode::topicCallback_setVelocitiesRaw, this);
 			subSetVelocities_ = nh_.subscribe("set_velocities", 1, &SdhNode::topicCallback_setVelocities, this);
-
+                        subSetPID_ = nh_.subscribe("set_pid_gains", 1, &SdhNode::topicCallback_setPID, this);
 			// getting hardware parameters from parameter server
 			nh_.param("sdhdevicetype", sdhdevicetype_, std::string("PCAN"));
 			nh_.param("sdhdevicestring", sdhdevicestring_, std::string("/dev/pcan0"));
@@ -377,6 +378,23 @@ class SdhNode
 
 			hasNewGoal_ = true;
 		}
+
+                void topicCallback_setPID(const std_msgs::String::ConstPtr& msg)
+                {
+                        if (!isInitialized_)
+                        {
+                                ROS_ERROR("%s: Rejected, sdh not initialized", action_name_.c_str());
+                                return;
+                        }
+                        if(msg->data == "default"){
+                                //set_default_PID_gains();
+                                ROS_INFO("Setting Default PID gains.");
+                        } else if(msg->data == "custom"){
+                                //set_custom_PID_gains();
+                                ROS_INFO("Setting Custom PID gains.");
+                        }
+                }
+
  		bool parseDegFromJointValue(const brics_actuator::JointValue& val, double &deg_val){
 		    if (val.unit == "rad/s"){
 			deg_val = val.value  * 180.0 / pi_;
