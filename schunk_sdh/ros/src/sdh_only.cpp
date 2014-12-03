@@ -458,7 +458,7 @@ class SdhNode
 				}
 				catch (SDH::cSDHLibraryException* e)
 				{
-					ROS_ERROR("An exception was caught: %s", e->what());
+					ROS_ERROR("1:An exception was caught: %s", e->what());
 					res.success.data = false;
 					res.error_message.data = e->what();
 					delete e;
@@ -495,7 +495,7 @@ class SdhNode
 			}
 			catch (SDH::cSDHLibraryException* e)
 			{
-				ROS_ERROR("An exception was caught: %s", e->what());
+				ROS_ERROR("2:An exception was caught: %s", e->what());
 				delete e;
 			}
 
@@ -544,7 +544,7 @@ class SdhNode
 			}
 			catch (SDH::cSDHLibraryException* e)
 			{
-				ROS_ERROR("An exception was caught: %s", e->what());
+				ROS_ERROR("3:An exception was caught: %s", e->what());
 				delete e;
 			}
 		}else{
@@ -572,7 +572,7 @@ class SdhNode
 				}
 				catch (SDH::cSDHLibraryException* e)
 				{
-					ROS_ERROR("An exception was caught: %s", e->what());
+					ROS_ERROR("4:An exception was caught: %s", e->what());
 					delete e;
 				}
 		
@@ -587,7 +587,7 @@ class SdhNode
 					}
 					catch (SDH::cSDHLibraryException* e)
 					{
-						ROS_ERROR("An exception was caught: %s", e->what());
+						ROS_ERROR("5:An exception was caught: %s", e->what());
 						delete e;
 					}
 				}
@@ -601,7 +601,7 @@ class SdhNode
 					}
 					catch (SDH::cSDHLibraryException* e)
 					{
-						ROS_ERROR("An exception was caught: %s", e->what());
+						ROS_ERROR("6:An exception was caught: %s", e->what());
 						delete e;
 					}
 				}
@@ -627,7 +627,8 @@ class SdhNode
 			}
 			catch (SDH::cSDHLibraryException* e)
 			{
-				ROS_ERROR("An exception was caught: %s", e->what());
+				ROS_ERROR("7:An exception was caught: %s", e->what());
+                                return;
 				delete e;
 			}
 			std::vector<double> actualVelocities;
@@ -637,8 +638,9 @@ class SdhNode
 			}
 			catch (SDH::cSDHLibraryException* e)
 			{
-				ROS_ERROR("An exception was caught: %s", e->what());
+				ROS_ERROR("8:An exception was caught: %s", e->what());
 				delete e;
+                                return;
 			}
 			
 			ROS_DEBUG("received %d angles from sdh",(int)actualAngles.size());
