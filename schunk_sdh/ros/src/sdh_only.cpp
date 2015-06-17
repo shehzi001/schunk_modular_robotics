@@ -424,7 +424,8 @@ class SdhNode
                         p_temp = 50.0;
                         i_temp = 5000;
                         sdh_serial_interface_.pid(6, &p_temp, &i_temp , &d);
-                        
+                     
+                        //setFeedForwardGains(6,1.0);  
                         ROS_INFO("PID parameters are set to default.");
 		}
 
@@ -447,6 +448,7 @@ class SdhNode
 
 		void set_custom_PID_gains()
 		{
+                      
                         double d = 0.0;
                         double p_temp = 20.0;
                         double i_temp = 0.0;
@@ -467,6 +469,8 @@ class SdhNode
 			p_temp = 50.0;
                         sdh_serial_interface_.pid(6, &p_temp, &i_temp , &d);
                         ROS_INFO("New PID parameters are set.");
+                     
+                        //setFeedForwardGains(6,0.0);
 		}
 
 		void get_PID_gains()
@@ -479,6 +483,45 @@ class SdhNode
 			}
                    
 		}
+
+                void getFeedforwardGains()
+                {
+                       SDH::cSimpleVector pp_test;
+                       //pp_test =  serial_interface.kv(axis,&kv);
+                       pp_test =  sdh_serial_interface_.kv();
+                       sleep(1);
+                       double x = 0.0;
+                       ROS_INFO("=================Reading speed gains==============");
+                       for (int axis = 0;axis < 7;axis++)
+                          {
+                            x = pp_test[axis];
+                            ROS_INFO_STREAM("axis:" << axis << " kv:" << x);
+                          }
+                }
+
+                void setFeedForwardGains(int axis, double kv)
+                {      
+                        sdh_serial_interface_.kv(axis, &kv);
+                        sleep(2.0);
+                        /*
+                        p_temp = 0.0;//50.0;
+                        sdh_serial_interface_.pid(2, &p_temp, &i_temp , &d);
+                        sleep(2.0);
+                        p_temp = 0.0;//20.0;
+                        sdh_serial_interface_.pid(3, &p_temp, &i_temp , &d);
+                        sleep(2.0);
+                        p_temp = 0.0;//50.0;
+                        sdh_serial_interface_.pid(4, &p_temp, &i_temp , &d);
+                        sleep(2.0);
+                        p_temp = 0.0;//20.0;
+                        sdh_serial_interface_.pid(5, &p_temp, &i_temp , &d);
+                        sleep(2.0);
+                        p_temp = 0.0;//50.0;
+                        sdh_serial_interface_.pid(6, &p_temp, &i_temp , &d);
+                        ROS_INFO("New PID parameters are set.");
+                        */
+                     //getFeedforwardGains();
+                }
 
  		bool parseDegFromJointValue(const brics_actuator::JointValue& val, double &deg_val){
 		    if (val.unit == "rad/s"){
